@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Little Library</title>
+
+    <style>
+        body {
+            font-family: Georgia, serif;
+            background-color: #fff5f7;
+            color: #59434a;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        h1 {
+            color: #b56576;
+            font-size: 35px;
+        }
+
+        .subtitle {
+            color: #8d6872;
+            font-style: italic;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 15px;
+            max-width: 600px;
+            box-shadow: 0 4px 12px #ead5dc;
+        }
+
+        h2 {
+            color: #b56576;
+        }
+
+        input, select, textarea, button {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            margin: 7px 0;
+            border: 1px solid #e5b9c5;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        button {
+            background: #b56576;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background: #985064;
+        }
+
+        .book {
+            background: #fff5f7;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+
+        .delete {
+            background: #777;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>📚 My Little Library</h1>
+    <p class="subtitle">A little home for all the stories I love ♡</p>
+</header>
+
+<div class="card">
+    <h2>🌷 Add a Book</h2>
+
+    <form id="bookForm">
+        <input id="title" placeholder="Book title" required>
+        <input id="author" placeholder="Author's name">
+
+        <select id="status">
+            <option>Want to Read</option>
+            <option>Currently Reading</option>
+            <option>Completed</option>
+        </select>
+
+        <select id="rating">
+            <option value="0">Not rated yet</option>
+            <option value="1">⭐</option>
+            <option value="2">⭐⭐</option>
+            <option value="3">⭐⭐⭐</option>
+            <option value="4">⭐⭐⭐⭐</option>
+            <option value="5">⭐⭐⭐⭐⭐</option>
+        </select>
+
+        <textarea id="review" placeholder="Your thoughts about this book..."></textarea>
+
+        <button type="submit">Add to My Library ♡</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2>📖 My Collection</h2>
+    <p id="count">Books in your library: 0</p>
+    <div id="bookList"></div>
+</div>
+
+<footer>
+    Made with love and a little bit of magic ✨
+</footer>
+
+<script>
+    let books = JSON.parse(localStorage.getItem("myBooks")) || [];
+
+    function displayBooks() {
+        const list = document.getElementById("bookList");
+        list.innerHTML = "";
+
+        document.getElementById("count").textContent =
+            "Books in your library: " + books.length;
+
+        books.forEach(function(book, index) {
+            const card = document.createElement("div");
+            card.className = "book";
+
+            const title = document.createElement("h3");
+            title.textContent = "📕 " + book.title;
+            card.appendChild(title);
+
+            const author = document.createElement("p");
+            author.textContent = "Author: " + (book.author || "Unknown");
+            card.appendChild(author);
+
+            const status = document.createElement("p");
+            status.textContent = "Status: " + book.status;
+            card.appendChild(status);
+
+            const rating = document.createElement("p");
+            rating.textContent = book.rating == 0
+                ? "Not rated yet"
+                : "Rating: " + "⭐".repeat(Number(book.rating));
+            card.appendChild(rating);
+
+            const review = document.createElement("p");
+            review.textContent = "Thoughts: " + (book.review || "No review yet");
+            card.appendChild(review);
+
+            const remove = document.createElement("button");
+            remove.textContent = "Remove Book";
+            remove.className = "delete";
+
+            remove.addEventListener("click", function() {
+                books.splice(index, 1);
+                saveBooks();
+            });
+
+            card.appendChild(remove);
+            list.appendChild(card);
+        });
+    }
+
+    function saveBooks() {
+        localStorage.setItem("myBooks", JSON.stringify(books));
+        displayBooks();
+    }
+
+    document.getElementById("bookForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const book = {
+            title: document.getElementById("title").value.trim(),
+            author: document.getElementById("author").value.trim(),
+            status: document.getElementById("status").value,
+            rating: document.getElementById("rating").value,
+            review: document.getElementById("review").value.trim()
+        };
+
+        if (!book.title) return;
+
+        books.push(book);
+        saveBooks();
+        this.reset();
+    });
+
+    displayBooks();
+</script>
+
+</body>
+</html>
